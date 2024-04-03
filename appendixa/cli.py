@@ -8,6 +8,9 @@ Be creative! do whatever you want!
 - Import things from your .base module
 """
 
+import random
+import Polygon.IO
+from .base import Room, AddRoom
 
 def main():  # pragma: no cover
     """
@@ -25,4 +28,19 @@ def main():  # pragma: no cover
         * List all available tasks
         * Run an application (Flask, FastAPI, Django, etc.)
     """
-    print("This will do something")
+
+from collections import deque
+generation_queue = deque()
+
+generation_queue.append(AddRoom(0, 0))
+segments = []
+current_heading = 0
+
+while len(generation_queue) > 0:
+    current_action = generation_queue.popleft()
+    
+    current_action.execute(generation_queue, segments, current_heading)
+
+Polygon.IO.writeSVG("map.svg", [segment.polygon for segment in segments])   
+
+    
