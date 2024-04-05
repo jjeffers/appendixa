@@ -14,95 +14,18 @@ and then choose `flask` as template.
 """
 import Polygon, Polygon.Utils
 import random
+from appendixa.vector import Vector
+from appendixa.room import Room
+from appendixa.segment import Segment
 
 # example constant variable
 NAME = "appendixa"
 
+EAST = 0
+NORTH = 90
+WEST = 180
+SOUTH = 270
 
-class Segment:
-    def __init__(self, x, y) -> None:
-        self.x = x
-        self.y = y
-        self.polygon = None
-
-    def number_of_exits(self):
-        floor_space = self.polygon.area()
-        selection = random.randrange(1,20,1)
-
-        if selection in range(1, 3):
-            if floor_space < 600:
-                return 1
-            else:
-                return 2
-        elif selection in range(4, 6):
-            if floor_space < 600:
-                return 2
-            else:
-                return 3
-        elif selection in range(7, 9):
-            if floor_space < 600:
-                return 3
-            else:
-                return 4
-        elif selection in range(10, 12):
-            if floor_space < 1200:
-                return 0
-            else:
-                return 1
-        elif selection in range(13, 15):
-            if floor_space < 1600:
-                return 0
-            else:
-                return 1
-        elif selection in range(16, 18):
-            return random.randrange(1,4,1)
-        else:
-            return 1
-    
-    def exit_location(self, current_heading):
-        selection = random.randrange(1,20,1)
-
-        if selection in range(1, 7):
-            return 'opposite'
-        elif selection in range(8, 12):
-            return 'right'
-        elif selection in range(13, 17):
-            return 'left'
-        else:
-            return 'same'
-        
-    def exit_location2(self, current_heading):
-        selection = random.randrange(1,20,1)
-
-        if selection in range(1, 7):
-            return current_heading
-        elif selection in range(8, 12):
-            return (current_heading + 90) % 360
-        elif selection in range(13, 17):
-            return (current_heading - 90) % 360
-        else:
-            return (current_heading + 180) % 360
-    
-class Room(Segment):
-    def __init__(self, x, y, rotation=0) -> None:
-        super().__init__(x, y)
-        self.polygon = Polygon.Polygon(((x, y), (x, y+30), (x+30, y+30), (x+30, y)))
-        self.polygon.rotate(rotation)
-
-    def has_exits(self):
-        return True
-    
-    def select_wall_segment(location, current_heading, polygon):
-        midpoints = []
-
-        points = Polygon.Utils.pointList(polygon)
-        print(f'Points are {points}')
-        first_point = points[0]
-        it = iter(points)
-        for tuple in it:
-            midpoint = [tuple[0] + next(it, first_point)[0] / 2, tuple[1] + next(it, first_point)[1] / 2]
-            print(f'Midpoint is {midpoint}')
-            midpoints.append(tuple)
 
 class AddRoom:
     def __init__(self, x, y, rotation=0) -> None:
@@ -121,5 +44,7 @@ class AddRoom:
             exit_locations[exit_location] += 1
             print(f'Exit location is {exit_location}')
 
-            wall_segment = Room.select_wall_segment(exit_location, current_heading, new_room.polygon)
+            wall_segment = new_room.select_wall_segment(exit_location, current_heading)
         
+
+            #generation_queue.append(AddExit(new_room.x, new_room.y)
