@@ -12,7 +12,7 @@ If you want to replace this with a Flask application run:
 
 and then choose `flask` as template.
 """
-import Polygon
+import Polygon, Polygon.Utils
 import random
 
 # example constant variable
@@ -63,6 +63,18 @@ class Segment:
         selection = random.randrange(1,20,1)
 
         if selection in range(1, 7):
+            return 'opposite'
+        elif selection in range(8, 12):
+            return 'right'
+        elif selection in range(13, 17):
+            return 'left'
+        else:
+            return 'same'
+        
+    def exit_location2(self, current_heading):
+        selection = random.randrange(1,20,1)
+
+        if selection in range(1, 7):
             return current_heading
         elif selection in range(8, 12):
             return (current_heading + 90) % 360
@@ -79,6 +91,18 @@ class Room(Segment):
 
     def has_exits(self):
         return True
+    
+    def select_wall_segment(location, current_heading, polygon):
+        midpoints = []
+
+        points = Polygon.Utils.pointList(polygon)
+        print(f'Points are {points}')
+        first_point = points[0]
+        it = iter(points)
+        for tuple in it:
+            midpoint = [tuple[0] + next(it, first_point)[0] / 2, tuple[1] + next(it, first_point)[1] / 2]
+            print(f'Midpoint is {midpoint}')
+            midpoints.append(tuple)
 
 class AddRoom:
     def __init__(self, x, y, rotation=0) -> None:
@@ -91,9 +115,11 @@ class AddRoom:
         print(f'There are {exits} exits in the room')
         segments.append(new_room)
 
+        exit_locations = { 'left': 0, 'right': 0, 'opposite': 0, 'same': 0 }
         for exit in range(exits):
             exit_location = new_room.exit_location(current_heading)
+            exit_locations[exit_location] += 1
             print(f'Exit location is {exit_location}')
 
-
-            generation_queue.append(AddExit(new_room.x, new_room.y)
+            wall_segment = Room.select_wall_segment(exit_location, current_heading, new_room.polygon)
+        
