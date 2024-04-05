@@ -12,12 +12,16 @@ If you want to replace this with a Flask application run:
 
 and then choose `flask` as template.
 """
-import Polygon
+import Polygon, Polygon.Utils
 import random
 
 # example constant variable
 NAME = "appendixa"
 
+EAST = 0
+NORTH = 90
+WEST = 180
+SOUTH = 270
 
 class Segment:
     def __init__(self, x, y) -> None:
@@ -79,6 +83,21 @@ class Room(Segment):
 
     def has_exits(self):
         return True
+    
+    def edges(self):
+        points = Polygon.Utils.pointList(self.polygon)
+
+        edges = [];
+
+        l = len(points)
+        first_point = points[0]
+        for index, point in enumerate(points):
+            if index < (l - 1):
+                next_point = points[index + 1]
+                edges.append((point, next_point))
+            else:
+                edges.append((point, first_point))
+        return edges
 
 class AddRoom:
     def __init__(self, x, y, rotation=0) -> None:
@@ -96,4 +115,4 @@ class AddRoom:
             print(f'Exit location is {exit_location}')
 
 
-            generation_queue.append(AddExit(new_room.x, new_room.y)
+            #generation_queue.append(AddExit(new_room.x, new_room.y)
