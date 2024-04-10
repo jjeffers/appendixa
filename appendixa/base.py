@@ -37,6 +37,18 @@ class AddExit:
         projected_vector = self.normal_vector*0
         x = self.x + projected_vector.x
         y = self.y + projected_vector.y
+
+        if self.normal_vector.x == 0:
+            if self.normal_vector.y > 0:
+                x -= 5
+            else:
+                x += 5
+        else:
+            if self.normal_vector.x > 0:
+                y += 5
+            else:
+                y -= 5
+
         print(f'Adding passage at {x}, {y} with rotation {Vector.angle(self.normal_vector)}')
         new_passage = Passage(x, y, Vector.angle(self.normal_vector)-math.radians(90))
         segments.append(new_passage)

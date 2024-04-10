@@ -59,7 +59,7 @@ window.fill((0, 0, 0))
  
 for poly in [segment.polygon for segment in segments]:
     points = Polygon.Utils.pointList(poly)
-    points = [(int(x+500), int(y+500)) for x, y in points]
+    points = [(int(x+300), int(y+300)) for x, y in points]
     pygame.draw.polygon(window, (255, 255, 255), points)
 
 # Draws the surface object to the screen.
