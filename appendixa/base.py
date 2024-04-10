@@ -14,9 +14,9 @@ and then choose `flask` as template.
 """
 import Polygon, Polygon.Utils
 import random
-from appendixa.vector import Vector
-from appendixa.room import Room
-from appendixa.segment import Segment
+import math
+from .room import *
+from .passage import *
 
 # example constant variable
 NAME = "appendixa"
@@ -26,6 +26,21 @@ NORTH = 90
 WEST = 180
 SOUTH = 270
 
+class AddExit:
+    def __init__(self, x, y, wall_normal) -> None:
+        self.x = x
+        self.y = y
+        self.normal_vector = wall_normal
+
+    def execute(self, generation_queue, segments, current_heading):
+        
+        projected_vector = self.normal_vector*0
+        x = self.x + projected_vector.x
+        y = self.y + projected_vector.y
+        print(f'Adding passage at {x}, {y} with rotation {Vector.angle(self.normal_vector)}')
+        new_passage = Passage(x, y, Vector.angle(self.normal_vector)-math.radians(90))
+        segments.append(new_passage)
+
 
 class AddRoom:
     def __init__(self, x, y, rotation=0) -> None:
@@ -33,6 +48,8 @@ class AddRoom:
         self.y = y
         
     def execute(self, generation_queue, segments, current_heading):
+        print(f'Adding room at {self.x}, {self.y}')
+
         new_room = Room(self.x, self.y)
         exits = new_room.number_of_exits()
         print(f'There are {exits} exits in the room')
@@ -45,6 +62,18 @@ class AddRoom:
             print(f'Exit location is {exit_location}')
 
             wall_segment = new_room.select_wall_segment(exit_location, current_heading)
-        
+            print(f'Wall segment is {wall_segment}')
 
-            #generation_queue.append(AddExit(new_room.x, new_room.y)
+            # find the normalized vector of the wall edge
+            wall_vector = Vector(wall_segment[1][0] - wall_segment[0][0], wall_segment[1][1] - wall_segment[0][1])
+            wall_normal = wall_vector.PerpendicularCounterClockwise().getNormalised()
+
+            print (f'Wall vector is {wall_vector}')
+            print (f'Wall normal is {wall_normal}')
+
+            midpoint = ((wall_segment[0][0] + wall_segment[1][0]) / 2, (wall_segment[0][1] + wall_segment[1][1]) / 2)
+            print(f'Midpoint of wall edge is {midpoint}')
+
+            rotation_angle = Vector.angle(wall_normal) - math.radians(90)
+            print(f'Angle of wall normal is {rotation_angle} radians or {math.degrees(rotation_angle)} degrees')
+            generation_queue.append(AddExit(midpoint[0], midpoint[1], wall_normal))

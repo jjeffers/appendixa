@@ -1,6 +1,6 @@
 from .segment import Segment
 import Polygon, Polygon.Utils
-from appendixa.vector import Vector
+from .vector import Vector
 import random
 
 class Room(Segment):
@@ -34,12 +34,15 @@ class Room(Segment):
             print(f'\tEdge is {edge}')
             edge_start = edge[0]
             edge_end = edge[1]
-
             
-            midpoint_vector_x = ((edge_start[0]-center[0]) + (edge_end[0]-center[0]))/2
-            midpoint_vector_y = ((edge_start[1]-center[1]) + (edge_end[1]-center[1]))/2
-            print(f'\tMidpoint is {midpoint_vector_x}, {midpoint_vector_y}')
+            midpoint_x = (edge_start[0] + edge_end[0]) / 2
+            midpoint_y = (edge_start[1] + edge_end[1]) / 2
 
+            print(f'\tMidpoint is {midpoint_x}, {midpoint_y}')
+
+            midpoint_vector_x = midpoint_x - center[0]
+            midpoint_vector_y = midpoint_y - center[1]
+           
             midpoint_vector = Vector(midpoint_vector_x, midpoint_vector_y)
            
             print(f'\tMidpoint vector is {midpoint_vector}')
